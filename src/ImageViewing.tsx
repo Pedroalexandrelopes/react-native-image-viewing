@@ -92,10 +92,10 @@ function ImageViewing({
   }
 
   return (
-    <View>
+    <View style={{flex: 1}}>
       <StatusBarManager presentationStyle={presentationStyle} />
       <View style={[styles.container, { opacity, backgroundColor }]}>
-        <Animated.View style={[styles.header, { transform: headerTransform }]}>
+        {/*<Animated.View style={[styles.header, { transform: headerTransform }]}>
           {typeof HeaderComponent !== "undefined" ? (
             React.createElement(HeaderComponent, {
               imageIndex: currentImageIndex,
@@ -103,7 +103,7 @@ function ImageViewing({
           ) : (
             <ImageDefaultHeader onRequestClose={onRequestCloseEnhanced} />
           )}
-        </Animated.View>
+          </Animated.View>*/}
         <VirtualizedList
           ref={imageList}
           data={images}
