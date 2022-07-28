@@ -27,8 +27,7 @@
   "files": [
     "dist",
     "readme.md",
-    "package.json",
-    "src"
+    "package.json"
   ],
   "author": "Anton Kalinin",
   "license": "MIT",
