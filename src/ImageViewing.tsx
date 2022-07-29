@@ -32,6 +32,7 @@ type Props = {
   visible: boolean;
   onRequestClose: () => void;
   onLongPress?: (image: ImageSource) => void;
+  onSinglePress?: (image: ImageSource) => void;
   onImageIndexChange?: (imageIndex: number) => void;
   presentationStyle?: ModalProps["presentationStyle"];
   animationType?: ModalProps["animationType"];
@@ -56,6 +57,7 @@ function ImageViewing({
   visible,
   onRequestClose,
   onLongPress = () => {},
+  onSinglePress,
   onImageIndexChange,
   animationType = DEFAULT_ANIMATION_TYPE,
   backgroundColor = DEFAULT_BG_COLOR,
@@ -128,6 +130,10 @@ function ImageViewing({
               imageSrc={imageSrc}
               onRequestClose={onRequestCloseEnhanced}
               onLongPress={onLongPress}
+              onPress={(image) => {
+                if (onSinglePress)
+                  onSinglePress(image);
+              }}
               delayLongPress={delayLongPress}
               swipeToCloseEnabled={swipeToCloseEnabled}
               doubleTapToZoomEnabled={doubleTapToZoomEnabled}

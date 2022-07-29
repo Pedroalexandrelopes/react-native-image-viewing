@@ -16,12 +16,12 @@ const SWIPE_CLOSE_VELOCITY = 1.55;
 const SCREEN = Dimensions.get("screen");
 const SCREEN_WIDTH = SCREEN.width;
 const SCREEN_HEIGHT = SCREEN.height;
-const ImageItem = ({ imageSrc, onZoom, onRequestClose, onLongPress, delayLongPress, swipeToCloseEnabled = true, doubleTapToZoomEnabled = true, }) => {
+const ImageItem = ({ imageSrc, onZoom, onRequestClose, onLongPress, onPress, delayLongPress, swipeToCloseEnabled = true, doubleTapToZoomEnabled = true, }) => {
     const scrollViewRef = useRef(null);
     const [loaded, setLoaded] = useState(false);
     const [scaled, setScaled] = useState(false);
     const imageDimensions = useImageDimensions(imageSrc);
-    const handleDoubleTap = useDoubleTapToZoom(scrollViewRef, scaled, SCREEN);
+    const handleDoubleTap = useDoubleTapToZoom(scrollViewRef, scaled, onPress, SCREEN);
     const [translate, scale] = getImageTransform(imageDimensions, SCREEN);
     const scrollValueY = new Animated.Value(0);
     const scaleValue = new Animated.Value(scale || 1);
@@ -56,12 +56,15 @@ const ImageItem = ({ imageSrc, onZoom, onRequestClose, onLongPress, delayLongPre
     const onLongPressHandler = useCallback((event) => {
         onLongPress(imageSrc);
     }, [imageSrc, onLongPress]);
+    const onPressHandler = useCallback((event) => {
+        onPress(imageSrc);
+    }, [imageSrc, onPress]);
     return (<View>
       <ScrollView ref={scrollViewRef} style={styles.listItem} pinchGestureEnabled showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false} maximumZoomScale={maxScale} contentContainerStyle={styles.imageScrollContainer} scrollEnabled={swipeToCloseEnabled} onScrollEndDrag={onScrollEndDrag} scrollEventThrottle={1} {...(swipeToCloseEnabled && {
         onScroll,
     })}>
         {(!loaded || !imageDimensions) && <ImageLoading />}
-        <TouchableWithoutFeedback onPress={doubleTapToZoomEnabled ? handleDoubleTap : undefined} onLongPress={onLongPressHandler} delayLongPress={delayLongPress}>
+        <TouchableWithoutFeedback onPress={doubleTapToZoomEnabled ? handleDoubleTap : onPressHandler} onLongPress={onLongPressHandler} delayLongPress={delayLongPress}>
           <Animated.Image source={imageSrc} style={imageStylesWithOpacity} onLoad={() => setLoaded(true)}/>
         </TouchableWithoutFeedback>
       </ScrollView>

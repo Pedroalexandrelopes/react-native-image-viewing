@@ -15,6 +15,7 @@ declare type Props = {
     visible: boolean;
     onRequestClose: () => void;
     onLongPress?: (image: ImageSource) => void;
+    onSinglePress?: (image: ImageSource) => void;
     onImageIndexChange?: (imageIndex: number) => void;
     presentationStyle?: ModalProps["presentationStyle"];
     animationType?: ModalProps["animationType"];

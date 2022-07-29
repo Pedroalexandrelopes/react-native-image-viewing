@@ -8,16 +8,24 @@
 import { useCallback } from "react";
 const DOUBLE_TAP_DELAY = 300;
 let lastTapTS = null;
+let timer;
 /**
  * This is iOS only.
  * Same functionality for Android implemented inside usePanResponder hook.
  */
-function useDoubleTapToZoom(scrollViewRef, scaled, screen) {
+function useDoubleTapToZoom(scrollViewRef, scaled, onSingleTap, screen) {
     const handleDoubleTap = useCallback((event) => {
         var _a, _b, _c;
         const nowTS = new Date().getTime();
         const scrollResponderRef = (_b = (_a = scrollViewRef) === null || _a === void 0 ? void 0 : _a.current) === null || _b === void 0 ? void 0 : _b.getScrollResponder();
+        const checkSingleTap = function () {
+            timer = setTimeout(() => {
+                lastTapTS = null;
+                onSingleTap(event);
+            }, DOUBLE_TAP_DELAY + 1);
+        };
         if (lastTapTS && nowTS - lastTapTS < DOUBLE_TAP_DELAY) {
+            timer && clearTimeout(timer);
             const { pageX, pageY } = event.nativeEvent;
             let targetX = 0;
             let targetY = 0;
@@ -42,6 +50,7 @@ function useDoubleTapToZoom(scrollViewRef, scaled, screen) {
         }
         else {
             lastTapTS = nowTS;
+            checkSingleTap();
         }
     }, [scaled]);
     return handleDoubleTap;

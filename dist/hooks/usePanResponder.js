@@ -15,7 +15,7 @@ const MIN_DIMENSION = Math.min(SCREEN_WIDTH, SCREEN_HEIGHT);
 const SCALE_MAX = 2;
 const DOUBLE_TAP_DELAY = 300;
 const OUT_BOUND_MULTIPLIER = 0.75;
-const usePanResponder = ({ initialScale, initialTranslate, onZoom, doubleTapToZoomEnabled, onLongPress, delayLongPress, }) => {
+const usePanResponder = ({ initialScale, initialTranslate, onZoom, doubleTapToZoomEnabled, onLongPress, delayLongPress, onSinglePress, }) => {
     let numberInitialTouches = 1;
     let initialTouches = [];
     let currentScale = initialScale;
@@ -25,6 +25,7 @@ const usePanResponder = ({ initialScale, initialTranslate, onZoom, doubleTapToZo
     let isDoubleTapPerformed = false;
     let lastTapTS = null;
     let longPressHandlerRef = null;
+    let timer;
     const meaningfulShift = MIN_DIMENSION * 0.01;
     const scaleValue = new Animated.Value(initialScale);
     const translateValue = new Animated.ValueXY(initialTranslate);
@@ -83,10 +84,17 @@ const usePanResponder = ({ initialScale, initialTranslate, onZoom, doubleTapToZo
             numberInitialTouches = gestureState.numberActiveTouches;
             if (gestureState.numberActiveTouches > 1)
                 return;
+            const checkSingleTap = function () {
+                timer = setTimeout(() => {
+                    lastTapTS = null;
+                    onSinglePress();
+                }, DOUBLE_TAP_DELAY + 1);
+            };
             const tapTS = Date.now();
             // Handle double tap event by calculating diff between first and second taps timestamps
             isDoubleTapPerformed = Boolean(lastTapTS && tapTS - lastTapTS < DOUBLE_TAP_DELAY);
             if (doubleTapToZoomEnabled && isDoubleTapPerformed) {
+                timer && clearTimeout(timer);
                 const isScaled = currentTranslate.x !== initialTranslate.x; // currentScale !== initialScale;
                 const { pageX: touchX, pageY: touchY } = event.nativeEvent.touches[0];
                 const targetScale = SCALE_MAX;
@@ -124,6 +132,7 @@ const usePanResponder = ({ initialScale, initialTranslate, onZoom, doubleTapToZo
             }
             else {
                 lastTapTS = Date.now();
+                checkSingleTap();
             }
         },
         onMove: (event, gestureState) => {

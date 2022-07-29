@@ -40,6 +40,7 @@ type Props = {
   doubleTapToZoomEnabled: boolean;
   onLongPress: () => void;
   delayLongPress: number;
+  onSinglePress: () => void;
 };
 
 const usePanResponder = ({
@@ -49,6 +50,7 @@ const usePanResponder = ({
   doubleTapToZoomEnabled,
   onLongPress,
   delayLongPress,
+  onSinglePress,
 }: Props): Readonly<
   [GestureResponderHandlers, Animated.Value, Animated.ValueXY]
 > => {
@@ -61,6 +63,7 @@ const usePanResponder = ({
   let isDoubleTapPerformed = false;
   let lastTapTS: number | null = null;
   let longPressHandlerRef: number | null = null;
+  let timer: number;
 
   const meaningfulShift = MIN_DIMENSION * 0.01;
   const scaleValue = new Animated.Value(initialScale);
@@ -144,6 +147,13 @@ const usePanResponder = ({
 
       if (gestureState.numberActiveTouches > 1) return;
 
+      const checkSingleTap = function () {
+        timer = setTimeout(() => {
+          lastTapTS = null;
+          onSinglePress();
+        }, DOUBLE_TAP_DELAY + 1);
+      }
+
       const tapTS = Date.now();
       // Handle double tap event by calculating diff between first and second taps timestamps
 
@@ -152,6 +162,7 @@ const usePanResponder = ({
       );
 
       if (doubleTapToZoomEnabled && isDoubleTapPerformed) {
+        timer && clearTimeout(timer);
         const isScaled = currentTranslate.x !== initialTranslate.x; // currentScale !== initialScale;
         const { pageX: touchX, pageY: touchY } = event.nativeEvent.touches[0];
         const targetScale = SCALE_MAX;
@@ -199,6 +210,7 @@ const usePanResponder = ({
         lastTapTS = null;
       } else {
         lastTapTS = Date.now();
+        checkSingleTap();
       }
     },
     onMove: (

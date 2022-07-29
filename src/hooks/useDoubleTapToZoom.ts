@@ -17,6 +17,7 @@ import { Dimensions } from "../@types";
 
 const DOUBLE_TAP_DELAY = 300;
 let lastTapTS: number | null = null;
+let timer: number;
 
 /**
  * This is iOS only.
@@ -25,6 +26,7 @@ let lastTapTS: number | null = null;
 function useDoubleTapToZoom(
   scrollViewRef: React.RefObject<ScrollView>,
   scaled: boolean,
+  onSingleTap: Function,
   screen: Dimensions
 ) {
   const handleDoubleTap = useCallback(
@@ -32,7 +34,15 @@ function useDoubleTapToZoom(
       const nowTS = new Date().getTime();
       const scrollResponderRef = scrollViewRef?.current?.getScrollResponder();
 
+      const checkSingleTap = function () {
+        timer = setTimeout(() => {
+          lastTapTS = null;
+          onSingleTap(event);
+        }, DOUBLE_TAP_DELAY + 1);
+      }
+
       if (lastTapTS && nowTS - lastTapTS < DOUBLE_TAP_DELAY) {
+        timer && clearTimeout(timer);
         const { pageX, pageY } = event.nativeEvent;
         let targetX = 0;
         let targetY = 0;
@@ -58,6 +68,7 @@ function useDoubleTapToZoom(
         });
       } else {
         lastTapTS = nowTS;
+        checkSingleTap();
       }
     },
     [scaled]
