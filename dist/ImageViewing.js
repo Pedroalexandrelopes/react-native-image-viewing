@@ -22,7 +22,6 @@ function ImageViewing({ images, keyExtractor, imageIndex, visible, onRequestClos
     const [opacity, onRequestCloseEnhanced] = useRequestClose(onRequestClose);
     const [currentImageIndex, onScroll] = useImageIndexChange(imageIndex, SCREEN);
     const [headerTransform, footerTransform, toggleBarsVisible] = useAnimatedComponents();
-    let isBarsVisible = true;
     useEffect(() => {
         if (onImageIndexChange) {
             onImageIndexChange(currentImageIndex);
@@ -33,7 +32,6 @@ function ImageViewing({ images, keyExtractor, imageIndex, visible, onRequestClos
         // @ts-ignore
         (_b = (_a = imageList) === null || _a === void 0 ? void 0 : _a.current) === null || _b === void 0 ? void 0 : _b.setNativeProps({ scrollEnabled: !isScaled });
         toggleBarsVisible(!isScaled);
-        isBarsVisible = !isScaled;
     }, [imageList]);
     if (!visible) {
         return null;
@@ -50,8 +48,6 @@ function ImageViewing({ images, keyExtractor, imageIndex, visible, onRequestClos
         if (onSinglePress) {
             onSinglePress(image);
         }
-        isBarsVisible = !isBarsVisible;
-        toggleBarsVisible(isBarsVisible);
     }} delayLongPress={delayLongPress} swipeToCloseEnabled={swipeToCloseEnabled} doubleTapToZoomEnabled={doubleTapToZoomEnabled}/>)} onMomentumScrollEnd={onScroll} 
     //@ts-ignore
     keyExtractor={(imageSrc, index) => keyExtractor

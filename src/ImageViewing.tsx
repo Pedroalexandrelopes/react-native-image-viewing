@@ -74,8 +74,6 @@ function ImageViewing({
   const [headerTransform, footerTransform, toggleBarsVisible] =
     useAnimatedComponents();
 
-  let isBarsVisible = true;
-
   useEffect(() => {
     if (onImageIndexChange) {
       onImageIndexChange(currentImageIndex);
@@ -87,7 +85,6 @@ function ImageViewing({
       // @ts-ignore
       imageList?.current?.setNativeProps({ scrollEnabled: !isScaled });
       toggleBarsVisible(!isScaled);
-      isBarsVisible = !isScaled;
     },
     [imageList]
   );
@@ -137,8 +134,6 @@ function ImageViewing({
                 if (onSinglePress) {
                   onSinglePress(image);
                 }
-                isBarsVisible = !isBarsVisible;
-                toggleBarsVisible(isBarsVisible);
               }}
               delayLongPress={delayLongPress}
               swipeToCloseEnabled={swipeToCloseEnabled}
