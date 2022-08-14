@@ -145,6 +145,8 @@ const usePanResponder = ({
       initialTouches = event.nativeEvent.touches;
       numberInitialTouches = gestureState.numberActiveTouches;
 
+      if (timer) clearTimeout(timer);
+
       if (gestureState.numberActiveTouches > 1) return;
 
       const checkSingleTap = function () {
@@ -162,7 +164,6 @@ const usePanResponder = ({
       );
 
       if (doubleTapToZoomEnabled && isDoubleTapPerformed) {
-        timer && clearTimeout(timer);
         const isScaled = currentTranslate.x !== initialTranslate.x; // currentScale !== initialScale;
         const { pageX: touchX, pageY: touchY } = event.nativeEvent.touches[0];
         const targetScale = SCALE_MAX;
@@ -218,6 +219,8 @@ const usePanResponder = ({
       gestureState: PanResponderGestureState
     ) => {
       const { dx, dy } = gestureState;
+
+      if (timer) clearTimeout(timer);
 
       if (Math.abs(dx) >= meaningfulShift || Math.abs(dy) >= meaningfulShift) {
         cancelLongPressHandle();
